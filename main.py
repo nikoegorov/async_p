@@ -1,7 +1,9 @@
 import asyncio
 import curses
-from random import choice, randint
+from random import choice, randint, random
 from time import sleep
+
+from fire_animation import fire
 
 
 async def blink(canvas, row, column, symbol="*"):
@@ -46,6 +48,14 @@ def draw(canvas):
         for _ in range(100)
     ]
 
+    coroutines.append(
+        fire(
+            canvas=canvas,
+            start_row=int(max_height/2),
+            start_column=int(max_width/2),
+        )
+    )
+
     while True:
         if len(coroutines) == 0:
             break
@@ -56,6 +66,7 @@ def draw(canvas):
             except StopIteration:
                 coroutines.remove(cor)
 
+        canvas.border()   # Re-draw border to cover fire hits
         canvas.refresh()
         sleep(TIC_TIMEOUT)
 
