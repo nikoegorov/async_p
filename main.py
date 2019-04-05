@@ -8,19 +8,19 @@ async def blink(canvas, row, column, symbol="*"):
     while True:
         # TODO check if timing is right
         canvas.addstr(row, column, symbol, curses.A_DIM)
-        for i in range(18):
+        for i in range(randint(1, 18)):
             await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol)
-        for i in range(8):
+        for i in range(randint(1, 8)):
             await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol, curses.A_BOLD)
-        for i in range(1):
+        for i in range(randint(1, 3)):
             await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol)
-        for i in range(3):
+        for i in range(randint(1, 3)):
             await asyncio.sleep(0)
 
 
