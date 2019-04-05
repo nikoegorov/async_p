@@ -6,7 +6,6 @@ from time import sleep
 
 async def blink(canvas, row, column, symbol="*"):
     while True:
-        # TODO check if timing is right
         canvas.addstr(row, column, symbol, curses.A_DIM)
         for i in range(randint(1, 18)):
             await asyncio.sleep(0)
