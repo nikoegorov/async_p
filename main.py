@@ -1,31 +1,51 @@
 import asyncio
 import curses
+from random import choice, randint
 from time import sleep
 
 
 async def blink(canvas, row, column, symbol="*"):
     while True:
+        # TODO check if timing is right
         canvas.addstr(row, column, symbol, curses.A_DIM)
-        await asyncio.sleep(0)
+        for i in range(18):
+            await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol)
-        await asyncio.sleep(0)
+        for i in range(8):
+            await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol, curses.A_BOLD)
-        await asyncio.sleep(0)
+        for i in range(1):
+            await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol)
-        await asyncio.sleep(0)
+        for i in range(3):
+            await asyncio.sleep(0)
 
 
 def draw(canvas):
+    TIC_TIMEOUT = 0.1
+
     curses.curs_set(False)
     canvas.border()
+
+    max_height, max_width = canvas.getmaxyx()
+
     canvas.refresh()
+    symbols = "+*.:"
 
-    row, column = (1, 1)
-
-    coroutines = [blink(canvas, row, column + i) for i in range(5)]
+    coroutines = [
+        blink(
+            canvas=canvas,
+            # Top border takes 1 line at top and 2 lines at bottom.
+            row=randint(1, max_height - 2),
+            # Left border takes 1 line from the left and 2 lines at the right.
+            column=randint(1, max_width - 2),
+            symbol=choice(symbols),
+        )
+        for _ in range(100)
+    ]
 
     while True:
         if len(coroutines) == 0:
@@ -38,8 +58,7 @@ def draw(canvas):
                 coroutines.remove(cor)
 
         canvas.refresh()
-        sleep(1)
-
+        sleep(TIC_TIMEOUT)
 
 
 def main():
