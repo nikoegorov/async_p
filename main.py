@@ -31,6 +31,7 @@ def draw(canvas, spaceshift_animations):
     TIC_TIMEOUT = 0.1
 
     curses.curs_set(False)
+    canvas.nodelay(True)
     canvas.border()
 
     max_height, max_width = canvas.getmaxyx()
@@ -63,8 +64,8 @@ def draw(canvas, spaceshift_animations):
     coroutines.append(
         animate_spaceship(
             canvas=canvas,
-            row=window_center_row,
-            column=window_center_column,
+            start_row=window_center_row,
+            start_column=window_center_column,
             animations=spaceshift_animations,
         )
     )
