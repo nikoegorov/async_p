@@ -34,6 +34,8 @@ def draw(canvas, spaceshift_animations):
     canvas.border()
 
     max_height, max_width = canvas.getmaxyx()
+    window_center_row = int(max_height / 2)
+    window_center_column = int(max_width / 2)
 
     canvas.refresh()
     symbols = "+*.:"
@@ -53,16 +55,16 @@ def draw(canvas, spaceshift_animations):
     coroutines.append(
         fire(
             canvas=canvas,
-            start_row=int(max_height / 2),
-            start_column=int(max_width / 2),
+            start_row=window_center_row,
+            start_column=window_center_column,
         )
     )
 
     coroutines.append(
         animate_spaceship(
             canvas=canvas,
-            row=int(max_height / 2),
-            column=int(max_width / 2),
+            row=window_center_row,
+            column=window_center_column,
             animations=spaceshift_animations,
         )
     )
@@ -109,6 +111,7 @@ def load_animations_from_folder(folder_path: str):
 
 
 def main():
+
     complex_animations_folder = 'complex_animations'
     spaceship_animations_folder = 'spaceship'
     spaceship_animations = load_animations_from_folder(
