@@ -117,7 +117,6 @@ def main():
 
     curses.update_lines_cols()
     curses.wrapper(draw, spaceship_animations)
-    curses.wrapper(draw, spaceship_animations)
     sleep(1)
 
 
