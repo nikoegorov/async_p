@@ -37,6 +37,8 @@ def draw(canvas, spaceshift_animations):
     max_height, max_width = canvas.getmaxyx()
     window_center_row = int(max_height / 2)
     window_center_column = int(max_width / 2)
+    border_limit_rows = max_height - 2
+    border_limit_columns = max_width - 2
 
     canvas.refresh()
     symbols = "+*.:"
@@ -44,13 +46,13 @@ def draw(canvas, spaceshift_animations):
     coroutines = [
         blink(
             canvas=canvas,
-            # Top border takes 1 line at top and 2 lines at bottom.
-            row=randint(1, max_height - 2),
-            # Left border takes 1 line from the left and 2 lines at the right.
-            column=randint(1, max_width - 2),
+            # Border takes 1 line at top and 2 lines at bottom.
+            row=randint(1, border_limit_rows),
+            # Border takes 1 line from the left and 2 lines at the right.
+            column=randint(1, border_limit_columns),
             symbol=choice(symbols),
         )
-        for _ in range(100)
+        for _ in range(1)
     ]
 
     coroutines.append(
@@ -66,6 +68,10 @@ def draw(canvas, spaceshift_animations):
             canvas=canvas,
             start_row=window_center_row,
             start_column=window_center_column,
+            border_limit_rows_top=1,
+            border_limit_rows_bottom=border_limit_rows,
+            border_limit_columns_left=1,
+            border_limit_columns_right=border_limit_columns,
             animations=spaceshift_animations,
         )
     )
