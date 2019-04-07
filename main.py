@@ -1,58 +1,47 @@
-import asyncio
 import curses
-from os import listdir, path
+from os import path
 from random import choice, randint
 from time import sleep
 
-from fire_animation import fire
-from spaceship_animation import animate_spaceship
+from animations_code.background_animation import blink
+from animations_code.fire_animation import fire
+from animations_code.load_animations_frames import load_animations_from_folder
+from animations_code.spaceship_animation import animate_spaceship
 
 
-async def blink(canvas, row, column, symbol="*"):
-    while True:
-        canvas.addstr(row, column, symbol, curses.A_DIM)
-        for i in range(randint(1, 18)):
-            await asyncio.sleep(0)
-
-        canvas.addstr(row, column, symbol)
-        for i in range(randint(1, 8)):
-            await asyncio.sleep(0)
-
-        canvas.addstr(row, column, symbol, curses.A_BOLD)
-        for i in range(randint(1, 3)):
-            await asyncio.sleep(0)
-
-        canvas.addstr(row, column, symbol)
-        for i in range(randint(1, 3)):
-            await asyncio.sleep(0)
+TIC_TIMEOUT = 0.1
 
 
-def draw(canvas, spaceshift_animations):
-    TIC_TIMEOUT = 0.1
+def draw(canvas, spaceship_animations):
 
     curses.curs_set(False)
     canvas.nodelay(True)
     canvas.border()
 
     max_height, max_width = canvas.getmaxyx()
-    window_center_row = int(max_height / 2)
-    window_center_column = int(max_width / 2)
-    border_limit_rows = max_height - 2
-    border_limit_columns = max_width - 2
+    canvas.addstr(20, 2, "Your terminal is %dx%d in size." % (max_width, max_height))
+
+    border_limit_top = 1
+    border_limit_left = 1
+    border_limit_right = max_width - 2
+    border_limit_bottom = max_height - 2
+
+    window_center_row = int(border_limit_bottom / 2)
+    window_center_column = int(border_limit_right / 2)
 
     canvas.refresh()
-    symbols = "+*.:"
+    stars_symbols = "+*.:"
 
     coroutines = [
         blink(
             canvas=canvas,
             # Border takes 1 line at top and 2 lines at bottom.
-            row=randint(1, border_limit_rows),
+            row=randint(1, border_limit_bottom),
             # Border takes 1 line from the left and 2 lines at the right.
-            column=randint(1, border_limit_columns),
-            symbol=choice(symbols),
+            column=randint(1, border_limit_right),
+            symbol=choice(stars_symbols),
         )
-        for _ in range(1)
+        for _ in range(100)
     ]
 
     coroutines.append(
@@ -68,11 +57,11 @@ def draw(canvas, spaceshift_animations):
             canvas=canvas,
             start_row=window_center_row,
             start_column=window_center_column,
-            border_limit_rows_top=1,
-            border_limit_rows_bottom=border_limit_rows,
-            border_limit_columns_left=1,
-            border_limit_columns_right=border_limit_columns,
-            animations=spaceshift_animations,
+            border_limit_rows_top=border_limit_top,
+            border_limit_rows_bottom=border_limit_bottom,
+            border_limit_columns_left=border_limit_left,
+            border_limit_columns_right=border_limit_right,
+            animations=spaceship_animations,
         )
     )
 
@@ -89,32 +78,6 @@ def draw(canvas, spaceshift_animations):
         canvas.border()  # Re-draw border to cover fire hits
         canvas.refresh()
         sleep(TIC_TIMEOUT)
-
-
-def read_file_contents(folder_path: str, filename: str) -> tuple:
-    with open(path.join(folder_path, filename)) as r:
-        return (filename, r.read())
-
-
-def list_files_in_folder(folder_path):
-    if not path.isdir(folder_path):
-        raise IOError(f'Folder "{folder_path}" is missing.')
-
-    return [
-        file
-        for file in listdir(folder_path)
-        if path.isfile(path.join(folder_path, file))
-    ]
-
-
-def load_animations_from_folder(folder_path: str):
-    animations = []
-    files = list_files_in_folder(folder_path)
-    for filename in files:
-        animation_in_file = read_file_contents(folder_path, filename)
-        animations.append(animation_in_file)
-
-    return sorted(animations)
 
 
 def main():
