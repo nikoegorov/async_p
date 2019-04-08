@@ -1,8 +1,5 @@
-SPACE_KEY_CODE = 32
-LEFT_KEY_CODE = 260
-RIGHT_KEY_CODE = 261
-UP_KEY_CODE = 259
-DOWN_KEY_CODE = 258
+from constants import (DOWN_KEY_CODE, LEFT_KEY_CODE, RIGHT_KEY_CODE,
+                       SPACE_KEY_CODE, UP_KEY_CODE)
 
 
 def read_controls(canvas):
@@ -68,3 +65,16 @@ def get_frame_size(text):
     rows = len(lines)
     columns = max([len(line) for line in lines])
     return rows, columns
+
+
+def discover_active_area(canvas) -> dict:
+    max_height, max_width = canvas.getmaxyx()
+
+    return {
+        'border_limit_top': 1,
+        'border_limit_left': 1,
+        'border_limit_right': max_width - 1,
+        'border_limit_bottom': max_height - 1,
+        'window_center_row': int(max_height / 2),
+        'window_center_column': int(max_width / 2),
+    }

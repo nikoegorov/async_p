@@ -1,6 +1,8 @@
 import asyncio
 import curses
 
+from curses_tools import discover_active_area
+
 
 async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0):
     """Display animation of gun shot. Direction and speed can be specified."""
@@ -30,3 +32,12 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
         canvas.addstr(round(row), round(column), ' ')
         row += rows_speed
         column += columns_speed
+
+
+def prepare_fire_coroutine(canvas):
+    active_area = discover_active_area(canvas)
+    return fire(
+        canvas=canvas,
+        start_row=active_area['window_center_row'],
+        start_column=active_area['window_center_column'],
+    )
