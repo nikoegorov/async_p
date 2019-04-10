@@ -1,9 +1,8 @@
 import asyncio
-from typing import List
+from collections import OrderedDict
 
 from itertools import cycle
 
-from constants import SPACESHIP_ANIMATIONS
 from curses_tools import (discover_active_area, draw_frame, get_frame_size,
                           read_controls)
 
@@ -16,9 +15,9 @@ async def animate_spaceship(
     border_limit_bottom: int,
     border_limit_left: int,
     border_limit_right: int,
-    animations: List[str],
+    animations: OrderedDict,
 ):
-    animations_cycle = cycle(animations)
+    animations_cycle = cycle(list(animations.values()))
 
     row_shift = 0
     column_shift = 0
@@ -26,7 +25,7 @@ async def animate_spaceship(
     while True:
         rows_direction, columns_direction, _ = read_controls(canvas)
 
-        filename, frame = next(animations_cycle)
+        frame = next(animations_cycle)
         frame_height, frame_width = get_frame_size(frame)
 
         frame_center_rows = int(frame_height / 2)
@@ -63,7 +62,6 @@ async def animate_spaceship(
         ship_center_position_column = new_frame_left_column - frame_center_columns
 
         draw_frame(canvas, ship_center_position_row, ship_center_position_column, frame)
-        canvas.refresh()
         await asyncio.sleep(0)
         draw_frame(
             canvas,
@@ -72,13 +70,12 @@ async def animate_spaceship(
             frame,
             negative=True,
         )
-        canvas.refresh()
 
         row_shift += rows_direction
         column_shift += columns_direction
 
 
-def prepare_spaceship_animation(canvas, spaceship_animations=SPACESHIP_ANIMATIONS):
+def prepare_spaceship_animation(canvas, spaceship_animations):
     active_area = discover_active_area(canvas)
 
     return animate_spaceship(

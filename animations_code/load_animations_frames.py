@@ -1,9 +1,10 @@
 from os import path, listdir
+from collections import OrderedDict
 
 
-def read_file_contents(folder_path: str, filename: str) -> tuple:
+def read_file_content(folder_path: str, filename: str):
     with open(path.join(folder_path, filename)) as r:
-        return (filename, r.read())
+        return r.read()
 
 
 def list_files_in_folder(folder_path):
@@ -17,11 +18,11 @@ def list_files_in_folder(folder_path):
     ]
 
 
-def load_animations_from_folder(folder_path: str):
-    animations = []
+def load_animations_from_folder(folder_path: str) -> OrderedDict:
+    animations = {}
     files = list_files_in_folder(folder_path)
     for filename in files:
-        animation_in_file = read_file_contents(folder_path, filename)
-        animations.append(animation_in_file)
+        file_content = read_file_content(folder_path, filename)
+        animations[filename] = file_content
 
-    return sorted(animations)
+    return OrderedDict(sorted(animations.items()))
