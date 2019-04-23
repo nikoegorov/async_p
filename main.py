@@ -6,7 +6,8 @@ from time import sleep
 from animations_code.background_animation import prepare_blink_coroutines
 from animations_code.fire_animation import prepare_fire_coroutine
 from animations_code.load_animations_frames import load_animations_from_folder
-from animations_code.space_garbage import fly_garbage, prepare_garbage_coroutine
+from animations_code.space_garbage import fly_garbage, \
+    prepare_garbage_coroutine, fill_orbit_with_garbage
 from animations_code.spaceship_animation import prepare_spaceship_animation
 from settings import TIC_TIMEOUT, COMPLEX_ANIMATIONS_FOLDER
 
@@ -20,7 +21,7 @@ def draw(canvas, spaceship_animations, garbage_animations):
     coroutines.extend(prepare_blink_coroutines(canvas))
     coroutines.append(prepare_fire_coroutine(canvas))
     coroutines.append(prepare_spaceship_animation(canvas, spaceship_animations))
-    coroutines.append(prepare_garbage_coroutine(canvas, garbage_animations))
+    coroutines.extend(fill_orbit_with_garbage(canvas, garbage_animations))
 
     while coroutines:
         for cor in coroutines:
@@ -42,8 +43,6 @@ def main():
     garbage_animations = load_animations_from_folder(
         path.join(COMPLEX_ANIMATIONS_FOLDER, 'garbage')
     )
-
-    print(garbage_animations)
 
     curses.wrapper(
         draw,
