@@ -37,25 +37,34 @@ def fill_orbit_with_garbage(canvas, garbage_frames: OrderedDict):
         for _ in range(len(garbage_frames))
     ]
 
-def is_overlapping(garbage_instances: deque, candidate_height, candidate_column):
+def is_overlapping(garbage_instances: deque, candidate_height, candidate_width, candidate_column):
     for queue_element in garbage_instances:
         height, width, delay, column = queue_element
-        # if all([
-        #     math.fabs(height - delay - candidate_height) in range(0, 5),
-        #     math.fabs(column + width - candidate_column) in range(0, 5),
-        # ]):
-        # if delay < candidate_height and math.fabs(column + width - candidate_column) ==0:
-        if all([
-            delay in range(candidate_height - delay + 1 , candidate_height),
-            candidate_column in range(column, column + width),
-        ]):
-            return True
-        else:
-            continue
+        if candidate_height >= delay or candidate_height >= height:
+            if candidate_column in range(column, column + width):
+                return True
+            elif column in range(candidate_column, candidate_column + candidate_width):
+                return True
+        # else:
 
+        # if all([
+        #     candidate_height > delay,
+        #     candidate_column in range(column, column + width),
+        # ]):
+        #     return True
+
+        # if all([
+        #     height >= candidate_height,
+        #     delay in range(candidate_height, height + delay),
+        #     candidate_column in range(column, column + width),
+        # ]):
+        #     return True
+        # else:
+        #     continue
+        #
 
 async def prepare_garbage_coroutine(canvas, garbage_frames: OrderedDict):
-    garbage_queue = deque(maxlen=len(garbage_frames))
+    garbage_queue = deque(maxlen=len(garbage_frames) * 2)
     while True:
         active_area = discover_active_area(canvas)
         garbage_column = randint(
@@ -66,7 +75,7 @@ async def prepare_garbage_coroutine(canvas, garbage_frames: OrderedDict):
         frame_height, frame_width = get_frame_size(garbage_chosen)
         delay = frame_height * 7 - randint(frame_height , frame_height * 2)
 
-        if is_overlapping(garbage_queue, frame_height, frame_width):
+        if is_overlapping(garbage_queue, frame_height, frame_width, garbage_column):
             continue
         else:
             garbage_queue.append((frame_height, frame_width, delay, garbage_column))
@@ -78,7 +87,7 @@ async def prepare_garbage_coroutine(canvas, garbage_frames: OrderedDict):
         if garbage_column + frame_width >= active_area['border_limit_right']:
             garbage_column = int(garbage_column - frame_width)
 
-        print(garbage_queue)
+        # print(garbage_queue)
 
         await fly_garbage(
             canvas=canvas,
